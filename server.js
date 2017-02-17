@@ -53,7 +53,9 @@ app.post('/todos', function(req, res) {
 
     res.json(body);
 });
-// Delete
+
+
+// ---- DELETE METHODS ---- //
 app.delete('/todos/:id', function(req, res) {
     var todo = parseInt(req.params.id, 10);
     var match = _.findWhere(todos, {id: todo});
@@ -68,6 +70,42 @@ app.delete('/todos/:id', function(req, res) {
 });
 
 
+// ---- PUT METHODS ---- //
+app.put('/todos/:id', function(req, res) {
+    var todo = parseInt(req.params.id, 10);
+    var match = _.findWhere(todos, {id: todo});
+    var body = _.pick(req.body, 'description', 'completed');
+    var validAttr = {};
+
+    if (!match) {
+        return res.status(404).send();
+    }
+
+    // Completion Status
+    if (body.hasOwnProperty('completed') && _.isBoolean(body.completed)) {
+        validAttr.completed = body.completed;
+    }
+    else if (body.hasOwnProperty('completed')) {
+        res.status(400).send();
+    }
+
+    // Description Status
+    if (body.hasOwnProperty('description') &&
+        _.isString(body.description) &&
+        body.description.trim().length > 0) {
+        validAttr.description = body.description;
+    }
+    else if (body.hasOwnProperty('description')) {
+        res.status(400).send();
+    }
+
+    // Update
+    _.extend(match, validAttr);
+    res.json(match);
+});
+
+
+// ---- START SERVER ---- //
 app.listen(PORT, function() {
     console.log('Express listening on port ' + PORT + '!');
 });
