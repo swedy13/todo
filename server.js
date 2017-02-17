@@ -24,11 +24,19 @@ app.get('/todos', function(req, res) {
     var params = req.query;
     var filtered = todos;
 
-    if (params.hasOwnProperty('completed') && params.completed === 'true') {
+    if (params.hasOwnProperty('completed') &&
+        params.completed === 'true') {
         filtered = _.where(filtered, {completed: true});
     }
-    else if (params.hasOwnProperty('completed') && params.completed === 'false') {
+    else if (params.hasOwnProperty('completed') &&
+             params.completed === 'false') {
         filtered = _.where(filtered, {completed: false});
+    }
+
+    if (params.hasOwnProperty('q') && params.q.length > 0) {
+        filtered = _.filter(filtered, function(todo) {
+            return todo.description.toLowerCase.indexOf(params.q.toLowerCase) > -1;
+        });
     }
 
     res.json(filtered);
