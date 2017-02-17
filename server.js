@@ -21,7 +21,17 @@ app.get('/', function(req, res) {
 
 // To Dos
 app.get('/todos', function(req, res) {
-    res.json(todos);
+    var params = req.query;
+    var filtered = todos;
+
+    if (params.hasOwnProperty('completed') && params.completed === 'true') {
+        filtered = _.where(filtered, {completed: true});
+    }
+    else if (params.hasOwnProperty('completed') && params.completed === 'false') {
+        filtered = _.where(filtered, {completed: false});
+    }
+
+    res.json(filtered);
 });
 app.get('/todos/:id', function(req, res) {
     var todo = parseInt(req.params.id, 10);
