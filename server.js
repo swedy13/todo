@@ -53,7 +53,19 @@ app.post('/todos', function(req, res) {
 
     res.json(body);
 });
+// Delete
+app.delete('/todos/:id', function(req, res) {
+    var todo = parseInt(req.params.id, 10);
+    var match = _.findWhere(todos, {id: todo});
 
+    if (!match) {
+        res.status(404).json({"error": "No item found with that id"});
+    }
+    else {
+        todos = _.without(todos, match);
+        res.json(match);
+    }
+});
 
 
 app.listen(PORT, function() {
