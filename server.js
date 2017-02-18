@@ -22,26 +22,30 @@ app.get('/', function(req, res) {
 
 // To Dos
 app.get('/todos', function(req, res) {
-    var params = req.query;
-    var filtered = todos;
+    var query = req.query;
+    var where = {};
 
-    if (params.hasOwnProperty('completed') &&
-        params.completed === 'true') {
-        filtered = _.where(filtered, {completed: true});
+    if (query.hasOwnProperty('completed') && query.completed === 'true') {
+        where.completed = true;
     }
-    else if (params.hasOwnProperty('completed') &&
-             params.completed === 'false') {
-        filtered = _.where(filtered, {completed: false});
+    else if (query.hasOwnProperty('completed') && query.completed == 'false') {
+        where.completed = false;
     }
 
-    if (params.hasOwnProperty('q') && params.q.length > 0) {
-        filtered = _.filter(filtered, function(todo) {
-            return todo.description.toLowerCase.indexOf(params.q.toLowerCase) > -1;
-        });
+    if (query.hasOwnProperty('q') && query.q.length > 0) {
+        where.description = {
+            $like: '%' + query.q + '%'
+        };
     }
 
-    res.json(filtered);
+    db.todo.findAll({where: where}).then(function(todos) {
+        res.json(todos);
+    }, function(e) {
+        res.status(500).send();
+    });
 });
+
+// To Do by ID
 app.get('/todos/:id', function(req, res) {
     var todoId = parseInt(req.params.id, 10);
 
