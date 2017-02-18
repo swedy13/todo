@@ -42,7 +42,7 @@ sequelize.sync().then(function() {
         });
     }).then(function(todos) {
         if (todos) {
-            todos.forEach(function(todo) {
+            todos.for Each(function(todo) {
                 console.log(todo.toJSON());
             });
         }
